@@ -1,7 +1,7 @@
 [project]
-name = "try-astronomy"
+name = "ml-astronomy"
 version = "0.1.0"
-description = "Add your description here"
+description = "Machine Learning for Astronomy: Multimodal deep learning on astronomical surveys (SDSS, HSC, JWST) and Edge/Cloud inference pipelines for radio-astronomy."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

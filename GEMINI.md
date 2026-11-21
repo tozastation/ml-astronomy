@@ -3,12 +3,13 @@
 このファイルには、このプロジェクトでGeminiがより良く支援するための指示とコンテキストが含まれています。
 
 ## プロジェクト概要
-天文学プロジェクトで、以下を含みます：
-- 自動領域推定機械学習モデル
+`ml-astronomy`（旧 `try-astronomy`）は、公開天文サーベイデータのマルチモーダル機械学習および電波観測所（`tozastation/radio-astronomy`）連携の推論パイプラインを扱うプロジェクトで、以下を含みます：
+- MultimodalUniverse（SDSS × HSC AGN分類、Galaxy10 DECaLS、Gaia）を用いた機械学習・可視化
+- JWST（CEERS）データ解析・モデル学習および推論APIプロトタイプ
+- `radio-astronomy` 向け Edge (ONNX CPU) / Cloud (Mac MPS) 推論パイプライン
 - JupyterHubでの可視化を通した、天文学の演習問題と解説
-- Kubernetesデプロイメント設定
-- Terraformインフラストラクチャコード
-- 天文学可視化プレイグラウンド
+- 天文学可視化プレイグラウンドおよび物理シミュレーション
+- 実験用 Kubernetes / Terraform / Docker デプロイメント設定
 
 ## 開発コマンド
 - Python環境: 依存関係管理に`uv`を使用（pyproject.tomlを参照）
@@ -169,11 +170,12 @@ visualize_problem_name()
 ```
 
 ## プロジェクト構造
-- `auto_area_estimation/` - PyTorchを使った領域推定MLモデル
-- `extreme_unraveling-the-universe/` - Jupyterノートブック形式の天文学教育コンテンツと演習問題
-- `kubernetes/` - Helmチャートとデプロイメント設定
-- `terraform/` - Infrastructure as Code
-- `playground/` - HTMLビジュアライゼーション（日周運動）
+- `projects/multimodal-universe/` - MultimodalUniverse（SDSS×HSC AGN分類、Galaxy10 DECaLS、Gaia）
+- `projects/ceers-photo-z/` - JWST CEERSデータ解析・PyTorch (MPS) 学習・Flask推論API
+- `projects/radio-ml/` - `radio-astronomy`（KubeEdge CPU / Mac MPS）連携 ML パイプライン
+- `fundamentals/extreme_unraveling-the-universe/` - Jupyterノートブック形式の天文学教育コンテンツと演習問題
+- `fundamentals/playground/` - 天体物理・軌道計算スクリプト
+- `infra/` - Dockerfile、docker-compose.yml、kind.yaml、Kubernetesマニフェスト、Terraformコード
 - `scripts/` - 開発用ユーティリティスクリプト
 
 ## 重要な指示

@@ -1,84 +1,97 @@
-# 🌌 Try Astronomy - 天文学とテクノロジーの探求
+# ml-astronomy
 
-[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.6.0+-red.svg)](https://pytorch.org/)
-[![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-orange.svg)](https://jupyter.org/)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.9+-ee4c2c?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Astropy](https://img.shields.io/badge/Astropy-7.2+-orange)](https://www.astropy.org/)
+[![ONNX](https://img.shields.io/badge/Edge-ONNX%20Runtime-005CED)](https://onnxruntime.ai/)
+[![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?logo=jupyter&logoColor=white)](https://jupyter.org/)
 
-**ITエンジニアが天文学を学ぶための個人的な学習リポジトリです。**
+公開天文ビッグデータ（SDSS / HSC / JWST / Gaia）を使ったマルチモーダル深層学習の実験から、個人用衛星地上局・銀河21cm電波望遠鏡リポジトリ（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）と連携する Edge / Cloud ハイブリッド推論基盤までを扱う、天文学×機械学習のリポジトリです（旧 `try-astronomy` から改名・再編）。
 
-## 👋 このリポジトリについて
+## `radio-astronomy` との連携構想
 
-このリポジトリは、ITエンジニアである私が天文学の初学者として、機械学習、データ解析、可視化などの技術を活用しながら宇宙について学ぶための場所です。
+本リポジトリは実観測を行う観測所（[`radio-astronomy`](https://github.com/tozastation/radio-astronomy)）と対になる解析・機械学習ラボ（`ml-astronomy`）として位置づけています。モデルの計算量やリアルタイム性の要件に応じて、Edge（CPU / KubeEdge）と Cloud / 母艦（Apple Silicon MPS）に推論を振り分けるアーキテクチャを目指しています。
 
-- 🎯 **対象**: 自分自身（ITエンジニア、天文学初学者）
-- 📖 **目的**: 教科書の演習問題を解き、実際にコードを書いて理解を深める
-- 🛠️ **アプローチ**: とっかかりやすい領域（Python、機械学習、インフラ）から実践的に学習
+```mermaid
+flowchart LR
+    subgraph Observatory["radio-astronomy (Edge: KubeEdge / GPD Pocket3 CPU)"]
+        SDR["RTL-SDR Blog V4"] --> DSP["DSP 復調・21cm 分光"]
+        DSP --> ONNX["軽量 ONNX 推論 (CPU)<br/>21cm RFI除去 / 信号ロック検知"]
+        ONNX -->|観測データ・メタデータ| S3["Garage S3 Archive"]
+    end
 
-機械学習による天体データ解析、インタラクティブな教育コンテンツ、そして再現性の高い開発環境を組み合わせることで、複雑な宇宙の謎を探求しています。
-
-## ✨ 特徴と技術
-
-本プロジェクトは、以下の主要な機能領域から構成されています。
-
-### 🔬 **機械学習による天体解析 (PyTorch, scikit-learn, Ray)**
--   **測光赤方偏移推定**: CEERSデータセットを用いた深層学習モデルの学習。
--   **天体領域の自動推定**: 天体画像から関心領域を特定する手法の実装。
--   **ハイパーパラメータ最適化**: Ray Tuneによる効率的なモデル探索の実践。
-
-### 🎓 **インタラクティブな教育コンテンツ (Jupyter, VPython)**
--   **教科書連動**: 『極・宇宙を解く』の演習問題をJupyterで解きながら学習。
--   **3Dシミュレーション**: VPythonで宇宙膨張や物理法則を視覚的に理解。
--   **段階的学習**: 宇宙のスケールから始まり、徐々に専門的なトピックへ進行。
-
-### 🛰️ **天文計算と軌道力学シミュレーション (NumPy, Astropy, Plotly)**
--   **物理法則の実装**: ケプラーの法則、質量光度関係、シュワルツシルト半径などを実装。
--   **軌道設計**: 衛星軌道投入（LEO→GTO→GEO）や太陽同期軌道（SSO）の計算を実践。
--   **データ可視化**: MatplotlibやPlotlyを用いたインタラクティブなグラフ描画の学習。
-
-### ☸️ **再現性の高い開発・研究環境 (Kubernetes, Terraform, Coder)**
--   **Infrastructure as Code**: Terraformでインフラをコード管理する実践。
--   **ローカルKubernetes**: Kindで手軽にローカル環境を構築。
--   **リモート開発環境**: CoderとJupyterHubによる開発環境の構築と活用。
-
-## 📊 使用データセット
-
-機械学習プロジェクトでは、以下の天文データセットを使用しています。
-
-### CEERS (Cosmic Evolution Early Release Science)
--   **用途**: 測光赤方偏移推定モデルの学習
--   **特徴**: JWST（ジェームズ・ウェッブ宇宙望遠鏡）による多波長観測データ
--   **内容**: 複数のフィルター（F070W, F090W, F115W, F150W, F200W, F277W, F356W, F444Wなど）の測光データ
-
-### Multimodal Universe
-HuggingFace上で公開されている天文データセットコレクション：
-
--   **Legacy Survey**: 銀河の多波長画像データ
--   **SDSS (Sloan Digital Sky Survey)**: スペクトルデータ
--   **PLAsTiCC (Photometric LSST Astronomical Time-Series Classification Challenge)**: 時系列光度曲線データ
-
-詳細は[Multimodal Universe](https://huggingface.co/MultimodalUniverse)を参照。
-
-## 📁 プロジェクト構造
-
+    subgraph Lab["ml-astronomy (Cloud / 母艦: Mac Apple Silicon MPS)"]
+        S3 --> Infer["PyTorch MPS バッチ推論<br/>気象衛星画像セグメンテーション / 受信品質診断"]
+        Survey["公開天文サーベイ<br/>(SDSS / HSC / JWST / Gaia)"] --> Train["モデル学習・マルチモーダル実験<br/>(1D-CNN / 2D-CNN / MLP)"]
+        Train -->|ONNX エクスポート| ONNX
+        Train --> Infer
+    end
 ```
-try-astronomy/
+
+## プロジェクト構成 (`projects/`)
+
+### 1. [`projects/multimodal-universe/`](projects/multimodal-universe/README.md)
+
+Hugging Face 等で公開されている天文大規模データセット（[MultimodalUniverse](https://github.com/MultimodalUniverse/MultimodalUniverse)）を用いたプロジェクト群です。
+
+* `galaxy-classifier/`（活動銀河核 AGN ハンター）: すばる望遠鏡 HSC（5バンド画像）× SDSS（スペクトル）の天球クロスマッチングによる AGN 2クラス分類（関連ブログ: [Qiita](https://qiita.com/tozastation/items/09e118bf67e129813d00)、進行中の改善項目: [GitHub Issue #8](https://github.com/tozastation/ml-astronomy/issues/8)）
+* `galaxy10_decals/`: DECaLS 銀河画像（10クラス）の形態分類 CNN 実験
+* `gaia/`: Gaia 衛星データの検証と 3D 星図の可視化
+
+### 2. [`projects/ceers-photo-z/`](projects/ceers-photo-z/README.md)
+
+ジェイムズ・ウェッブ宇宙望遠鏡（JWST）の CEERS サーベイデータ（HDF5）を用いたデータ可視化、PyTorch（Apple Silicon MPS / Ray Tune）による学習実験、および Flask による簡易推論 API のプロトタイプです（旧 `auto_area_estimation/`）。
+
+### 3. [`projects/radio-ml/`](projects/radio-ml/README.md)
+
+ベランダ電波観測所（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）の観測データに向けた機械学習パイプラインです。
+
+* Edge 推論 (KubeEdge / CPU / ONNX): 銀河 21cm 水素線（1420.406 MHz）スペクトルの RFI（人工電波混信）自動検知とウォーターフォールからのキャリア信号検知
+* Cloud / 母艦推論 (Mac MPS / PyTorch): METEOR-M2 AVHRR 高解像度画像の雲・積雪・海氷セグメンテーションとスペクトログラム×軌道テレメトリのマルチモーダル受信品質診断
+
+## 基礎学習・シミュレーション (`fundamentals/`)
+
+天文学・宇宙物理学の基礎理論をコードと可視化で追体験するための教材・実験コード群です。
+
+* `fundamentals/extreme_unraveling-the-universe/`: 書籍『極・宇宙を解く』（恒星社厚生閣）に沿った Jupyter ノートブック演習
+* `fundamentals/playground/`: ケプラーの法則、宇宙膨張とスペクトル赤方偏移、シュワルツシルト半径、衛星軌道投入（LEO → GTO → GEO）などのシミュレーションスクリプト
+
+## ディレクトリ構成
+
+```text
+ml-astronomy/
 ├── README.md
-├── auto_area_estimation/   # 機械学習（測光赤方偏移推定）
-├── extreme_unraveling-the-universe/ # 教育コンテンツ（『極・宇宙を解く』）
-├── kubernetes/             # Kubernetesマニフェスト (Helmfile)
-├── playground/             # 天文計算・可視化スクリプトの実験場
-├── scripts/                # ユーティリティスクリプト（PDF変換など）
-└── terraform/              # インフラ定義 (Terraform)
+├── pyproject.toml                       # プロジェクト共通の依存関係 (uv 管理)
+├── uv.lock
+├── projects/                            # 機械学習・データ解析プロジェクト
+│   ├── multimodal-universe/             # MultimodalUniverse (AGN分類 / Galaxy10 / Gaia)
+│   ├── ceers-photo-z/                   # JWST CEERS 解析・PyTorch学習・推論API
+│   └── radio-ml/                        # radio-astronomy 連携 (Edge ONNX / Cloud MPS)
+├── fundamentals/                        # 基礎理論・教育コンテンツ・物理シミュレーション
+│   ├── extreme_unraveling-the-universe/ # 『極・宇宙を解く』Jupyter演習
+│   └── playground/                      # 軌道力学・天体物理シミュレーションスクリプト
+├── infra/                               # 開発・実験用インフラ設定
+│   ├── Dockerfile / docker-compose.yml  # JupyterLab GPU コンテナ環境
+│   ├── kind.yaml                        # ローカル Kubernetes (Kind) 設定
+│   ├── kubernetes/                      # Helmfile / JupyterHub / Coder 設定
+│   └── terraform/                       # Coder ワークスペース用 Terraform
+└── scripts/                             # ユーティリティスクリプト (PDF変換 等)
 ```
 
-## 📚 参考資料
+## セットアップ
 
-本プロジェクトの教育コンテンツ `extreme_unraveling-the-universe` は、以下の書籍を参考に作成されています。
+Python 環境の依存関係管理には [`uv`](https://docs.astral.sh/uv/) を使用しています（Python 3.11 以上）。
 
--   **『極・宇宙を解く』** (恒星社厚生閣, 2020年)
-    -   編者：福江 純、沢 武文、高橋 真聡
-    -   ISBN: 9784769916437
--   **『極・宇宙を解く 詳解』** (恒星社厚生閣)
-    -   [公式情報](https://www.kouseisha.com/news/n32789.html)
+```bash
+# リポジトリのクローン
+git clone https://github.com/tozastation/ml-astronomy.git
+cd ml-astronomy
 
+# 依存ライブラリのインストール
+uv sync
 
+# JupyterLab の起動
+uv run jupyter lab
+```
+
+`MultimodalUniverse` のデータセット読み込みスクリプト (`trust_remote_code=True`) は `datasets==2.21.0` で動作確認されているため、`pyproject.toml` でバージョンを固定しています。

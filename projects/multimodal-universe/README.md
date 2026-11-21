@@ -1,6 +1,16 @@
 # Multimodal Universe
 
-Multimodal Universe は、天文学の複数のサーベイやモダリティから収集された大規模なマルチモーダルデータセットのコレクションです。このプロジェクトは、機械学習や深層学習を用いた天文学研究を促進することを目的としています。
+Multimodal Universe は天文学の複数のサーベイやモダリティから収集された大規模なマルチモーダルデータセットのコレクションです。このプロジェクトは機械学習や深層学習を用いた天文学研究を促進することを目的としています。
+
+## このディレクトリ内の実装プロジェクト
+
+| ディレクトリ | 概要 | ノートブック / ドキュメント |
+|---|---|---|
+| `galaxy-classifier/` | すばる HSC (画像) × SDSS (スペクトル) による活動銀河核 (AGN) 分類 | [`agn_hunter.ipynb`](galaxy-classifier/notebooks/agn_hunter.ipynb) / [Qiita 記事](https://qiita.com/tozastation/items/09e118bf67e129813d00) |
+| `galaxy10_decals/` | Galaxy10 DECaLS を用いた銀河形態 10クラス分類 CNN | [`01_data_exploration.ipynb`](galaxy10_decals/notebooks/01_data_exploration.ipynb), [`02_simple_cnn.ipynb`](galaxy10_decals/notebooks/02_simple_cnn.ipynb) |
+| `gaia/` | Gaia 衛星データの検証および 3D 星図の可視化 | [`data_validation.ipynb`](gaia/notebooks/data_validation.ipynb), [`01_3d_star_map.ipynb`](gaia/notebooks/01_3d_star_map.ipynb) |
+
+---
 
 ## データセット概要
 
@@ -91,18 +101,18 @@ LSST シミュレーションに基づく時間変動天体の光度曲線。超
 系外惑星探査衛星による高精度測光時系列データ。惑星のトランジット検出、恒星の変光解析、連星系の研究に利用されます。
 
 ### 超新星時系列データセット
-以下の複数のサーベイから超新星の光度曲線データを収集：
+以下の複数のサーベイから超新星の光度曲線データを収集しています。
 
-- **CfA Sample (1k samples)**: ハーバード・スミソニアン天体物理学センターによる古典的な超新星観測データ
-- **YSE (Young Supernova Experiment) (2k samples)**: 若い段階の超新星観測に特化したデータ
-- **PS1 SNe Ia (Pan-STARRS1 Type Ia Supernovae) (369 samples)**: 高品質なIa型超新星の光度曲線
-- **DES Y3 SNe Ia (248 samples)**: Dark Energy Survey の3年目データから得られたIa型超新星
-- **SNLS (Supernova Legacy Survey) (239 samples)**: ダークエネルギー研究のための標準光源としてのIa型超新星
-- **Foundation (180 samples)**: 宇宙論的距離測定のための低赤方偏移Ia型超新星
-- **CSP SNe Ia (Carnegie Supernova Project) (134 samples)**: 多波長観測による高精度Ia型超新星データ
-- **Swift SNe Ia (117 samples)**: Swift衛星による紫外線～可視光観測のIa型超新星
+- CfA Sample (1k samples): ハーバード・スミソニアン天体物理学センターによる古典的な超新星観測データ
+- YSE (Young Supernova Experiment) (2k samples): 若い段階の超新星観測に特化したデータ
+- PS1 SNe Ia (Pan-STARRS1 Type Ia Supernovae) (369 samples): 高品質なIa型超新星の光度曲線
+- DES Y3 SNe Ia (248 samples): Dark Energy Survey の3年目データから得られたIa型超新星
+- SNLS (Supernova Legacy Survey) (239 samples): ダークエネルギー研究のための標準光源としてのIa型超新星
+- Foundation (180 samples): 宇宙論的距離測定のための低赤方偏移Ia型超新星
+- CSP SNe Ia (Carnegie Supernova Project) (134 samples): 多波長観測による高精度Ia型超新星データ
+- Swift SNe Ia (117 samples): Swift衛星による紫外線～可視光観測のIa型超新星
 
-これらのデータセットは、超新星の物理、宇宙の膨張率測定、ダークエネルギーの性質解明に重要です。
+これらのデータセットは超新星の物理、宇宙の膨張率測定、ダークエネルギーの性質解明に重要です。
 
 ## 表形式データセット (Tabular)
 
@@ -156,95 +166,83 @@ WISE（Wide-field Infrared Survey Explorer）衛星による中赤外線全天�
 
 ## ディープラーニング学習ガイド
 
-このデータセットコレクションは、天文学データを使ってディープラーニングを学ぶための優れた教材です。実世界の大規模データを使いながら、基礎から応用まで段階的に学習できます。
+このデータセットコレクションは天文学データを使ってディープラーニングを学ぶための優れた教材です。実世界の大規模データを使いながら、基礎から応用まで段階的に学習できます。
 
 ### 学習レベル別おすすめデータセット
 
-#### 🔰 初級レベル: 画像分類から始める
+#### 初級レベル（画像分類から始める）
 
-**おすすめデータセット**: Galaxy10 DECaLS (15k samples)
-- **学習内容**: CNNによる画像分類の基礎
-- **推奨モデル**: ResNet, EfficientNet, Vision Transformer (ViT)
-- **プロジェクト例**:
-  - 10種類の銀河形態を分類するCNNモデルの構築
-  - データ拡張（回転、反転）の効果検証
-  - 転移学習（ImageNetで事前学習済みモデル）の活用
-  - Grad-CAMによる判断根拠の可視化
+おすすめデータセットは Galaxy10 DECaLS (15k samples) です。CNNによる画像分類の基礎（ResNet、EfficientNet、Vision Transformer (ViT)）を学びます。
 
-**次のステップ**: Legacy Surveys DR10 (124M samples)
-- より大規模なデータでのモデルの汎化性能向上
-- ミニバッチ学習と分散学習の実践
+- 10種類の銀河形態を分類するCNNモデルの構築
+- データ拡張（回転、反転）の効果検証
+- 転移学習（ImageNetで事前学習済みモデル）の活用
+- Grad-CAMによる判断根拠の可視化
 
-#### 🎯 中級レベル: 多様なタスクに挑戦
+次のステップは Legacy Surveys DR10 (124M samples) です。より大規模なデータでのモデルの汎化性能向上と、ミニバッチ学習および分散学習の実践に進みます。
 
-**1. 時系列データ分析**
+#### 中級レベル（多様なタスクに挑戦）
 
-**おすすめデータセット**: TESS (160k samples), PLAsTiCC (3.5M samples)
-- **学習内容**: RNN, LSTM, GRU, Transformerによる時系列解析
-- **プロジェクト例**:
-  - 系外惑星のトランジット信号検出（TESS）
-  - 多クラス突発天体の分類（PLAsTiCC）
-  - Attention機構による重要時刻の可視化
-  - 不均衡データへの対処（SMOTE, Focal Loss）
+1. 時系列データ分析
 
-**2. スペクトル解析**
+おすすめデータセットは TESS (160k samples) と PLAsTiCC (3.5M samples) です。RNN、LSTM、GRU、Transformer による時系列解析を学びます。
 
-**おすすめデータセット**: SDSS-II (4M samples), DESI (20M samples)
-- **学習内容**: 1D CNN, ResNet1D, Transformerによるスペクトル解析
-- **プロジェクト例**:
-  - 恒星の分光型分類
-  - 銀河の赤方偏移推定（回帰問題）
-  - スペクトル特徴の埋め込み表現学習
-  - 物理パラメータの多出力同時推定
+- 系外惑星のトランジット信号検出（TESS）
+- 多クラス突発天体の分類（PLAsTiCC）
+- Attention機構による重要時刻の可視化
+- 不均衡データへの対処（SMOTE、Focal Loss）
 
-**3. 表形式データ**
+2. スペクトル解析
 
-**おすすめデータセット**: Gaia (220M samples), PROVABGS (221k samples)
-- **学習内容**: TabNet, FT-Transformer, DeepFM
-- **プロジェクト例**:
-  - 恒星の物理パラメータ推定
-  - 特徴量エンジニアリングとディープラーニングの比較
-  - 欠損値の扱いと不確実性の定量化
+おすすめデータセットは SDSS-II (4M samples) と DESI (20M samples) です。1D CNN、ResNet1D、Transformer によるスペクトル解析を学びます。
 
-#### 🚀 上級レベル: 最先端技術に挑戦
+- 恒星の分光型分類
+- 銀河の赤方偏移推定（回帰問題）
+- スペクトル特徴の埋め込み表現学習
+- 物理パラメータの多出力同時推定
 
-**1. マルチモーダル学習**
+3. 表形式データ
 
-**複数のデータセットを組み合わせ**:
-- 画像（Legacy Surveys）+ 表形式（Gaia）+ スペクトル（SDSS）
-- **学習内容**: 異なるモダリティの統合、Fusion技術
-- **プロジェクト例**:
-  - 複数の観測データから銀河の物理的性質を総合的に推定
-  - Early fusion / Late fusion / Hybrid fusionの比較
-  - Cross-modal attention機構の実装
+おすすめデータセットは Gaia (220M samples) と PROVABGS (221k samples) です。TabNet、FT-Transformer、DeepFM を学びます。
 
-**2. ハイパースペクトル画像解析**
+- 恒星の物理パラメータ推定
+- 特徴量エンジニアリングとディープラーニングの比較
+- 欠損値の扱いと不確実性の定量化
 
-**おすすめデータセット**: MaNGA SDSS-IV (12k samples)
-- **学習内容**: 3D CNN, Spatial-Spectral Network
-- **プロジェクト例**:
-  - 銀河内の星形成領域のセグメンテーション
-  - 空間と波長次元の同時解析
-  - U-Net系モデルによるピクセル単位の分類
+#### 上級レベル（最先端技術に挑戦）
 
-**3. 自己教師あり学習**
+1. マルチモーダル学習
 
-**おすすめデータセット**: 大規模データセット全般
-- **学習内容**: SimCLR, MoCo, BYOL, MAE (Masked Autoencoder)
-- **プロジェクト例**:
-  - ラベルなし天文画像からの表現学習
-  - Contrastive Learningによる類似銀河の発見
-  - 事前学習モデルのファインチューニング
-  - 少量ラベルデータでの高精度分類
+画像（Legacy Surveys）、表形式（Gaia）、スペクトル（SDSS）を組み合わせ、異なるモダリティの統合と Fusion 技術を学びます。
 
-**4. 生成モデル**
+- 複数の観測データから銀河の物理的性質を総合的に推定
+- Early fusion / Late fusion / Hybrid fusion の比較
+- Cross-modal attention機構の実装
 
-**おすすめデータセット**: JWST (300k samples), HSC (477k samples)
-- **学習内容**: VAE, GAN, Diffusion Models
-- **プロジェクト例**:
-  - 銀河画像の生成と超解像
-  - スペクトルの補完とノイズ除去
-  - Conditional GANによる特定属性を持つ天体の生成
+2. ハイパースペクトル画像解析
+
+おすすめデータセットは MaNGA SDSS-IV (12k samples) です。3D CNN、Spatial-Spectral Network を学びます。
+
+- 銀河内の星形成領域のセグメンテーション
+- 空間と波長次元の同時解析
+- U-Net系モデルによるピクセル単位の分類
+
+3. 自己教師あり学習
+
+大規模データセット全般を対象に SimCLR、MoCo、BYOL、MAE (Masked Autoencoder) を学びます。
+
+- ラベルなし天文画像からの表現学習
+- Contrastive Learningによる類似銀河の発見
+- 事前学習モデルのファインチューニング
+- 少量ラベルデータでの高精度分類
+
+4. 生成モデル
+
+おすすめデータセットは JWST (300k samples) と HSC (477k samples) です。VAE、GAN、Diffusion Models を学びます。
+
+- 銀河画像の生成と超解像
+- スペクトルの補完とノイズ除去
+- Conditional GANによる特定属性を持つ天体の生成
 
 ### 実装環境の構築
 
@@ -264,21 +262,21 @@ pip install specutils  # スペクトル解析
 
 ### 学習リソース
 
-#### チュートリアル
+#### 演習チュートリアル
 
-1. **画像分類**: Galaxy10 DECaLSを使った銀河形態分類
+1. 画像分類: Galaxy10 DECaLSを使った銀河形態分類
    - CNN基礎から転移学習まで
    - データ拡張とモデル評価
 
-2. **時系列解析**: TESSデータで系外惑星検出
+2. 時系列解析: TESSデータで系外惑星検出
    - LSTM/GRUの実装
    - 異常検出とシグナル処理
 
-3. **スペクトル解析**: SDSS恒星分光型分類
+3. スペクトル解析: SDSS恒星分光型分類
    - 1D CNNの設計
    - 物理パラメータの推定
 
-4. **マルチモーダル**: 複数観測データの統合
+4. マルチモーダル: 複数観測データの統合
    - データ融合戦略
    - アンサンブル学習
 
@@ -316,12 +314,12 @@ graph LR
 
 ### ベンチマークとコンペティション
 
-以下のようなタスクでモデルの性能を測定できます：
+以下のタスクでモデルの性能を測定できます。
 
-1. **分類精度**: Galaxy10での形態分類（目標: F1 > 0.90）
-2. **回帰精度**: 赤方偏移推定（目標: RMSE < 0.05）
-3. **検出性能**: 系外惑星トランジット検出（目標: Recall > 0.95）
-4. **生成品質**: 銀河画像生成（目標: FID < 50）
+1. 分類精度 (Galaxy10での形態分類、目標: F1 > 0.90)
+2. 回帰精度 (赤方偏移推定、目標: RMSE < 0.05)
+3. 検出性能 (系外惑星トランジット検出、目標: Recall > 0.95)
+4. 生成品質 (銀河画像生成、目標: FID < 50)
 
 ### コミュニティとリソース
 
@@ -332,14 +330,14 @@ graph LR
 
 ## 利用方法
 
-このデータセットコレクションは、以下のような天文学・機械学習研究に活用できます：
+このデータセットコレクションは次の天文学・機械学習研究に活用できます。
 
-1. **マルチモーダル学習**: 異なるモダリティのデータを組み合わせた統合的な解析
-2. **転移学習**: 大規模データセットで事前学習したモデルの応用
-3. **教師あり学習**: 分類、回帰、セグメンテーションなどのタスク
-4. **教師なし学習**: クラスタリング、次元削減、異常検出
-5. **半教師あり学習**: ラベル付きデータとラベルなしデータの併用
-6. **自己教師あり学習**: 大量のラベルなしデータからの特徴学習
+1. マルチモーダル学習: 異なるモダリティのデータを組み合わせた統合的な解析
+2. 転移学習: 大規模データセットで事前学習したモデルの応用
+3. 教師あり学習: 分類、回帰、セグメンテーションなどのタスク
+4. 教師なし学習: クラスタリング、次元削減、異常検出
+5. 半教師あり学習: ラベル付きデータとラベルなしデータの併用
+6. 自己教師あり学習: 大量のラベルなしデータからの特徴学習
 
 ## データアクセス
 
@@ -347,7 +345,7 @@ graph LR
 
 ## 引用
 
-このデータセットコレクションを研究に使用する場合は、以下のリポジトリを引用してください：
+このデータセットコレクションを研究に使用する場合は、以下のリポジトリを引用してください。
 
 ```
 MultimodalUniverse Project
@@ -371,4 +369,4 @@ https://github.com/MultimodalUniverse/MultimodalUniverse
 
 ---
 
-**注意**: このREADMEは、Multimodal Universe プロジェクトの概要を提供するものです。実際のデータアクセスやAPIの詳細については、公式リポジトリの最新情報を参照してください。
+注意: このREADMEは Multimodal Universe プロジェクトの概要を提供するものです。実際のデータアクセスやAPIの詳細については、公式リポジトリの最新情報を参照してください。
