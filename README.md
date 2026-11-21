@@ -42,12 +42,12 @@ Hugging Face 等で公開されている天文大規模データセット（[Mul
 
 ジェイムズ・ウェッブ宇宙望遠鏡（JWST）の CEERS サーベイデータ（HDF5）を用いたデータ可視化、PyTorch（Apple Silicon MPS / Ray Tune）による学習実験、および Flask による簡易推論 API のプロトタイプです（旧 `auto_area_estimation/`）。
 
-### 3. [`projects/radio-ml/`](projects/radio-ml/README.md)
+### 3. [`projects/radio-ml/`](projects/radio-ml/README.md) (WIP / 構想中)
 
-ベランダ電波観測所（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）の観測データに向けた機械学習パイプラインです。
+ベランダ電波観測所（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）の観測データに向けて今後構築を予定している機械学習パイプラインです（現在未実装・設計段階。[GitHub Issue #7](https://github.com/tozastation/ml-astronomy/issues/7)）。
 
-* Edge 推論 (KubeEdge / CPU / ONNX): 銀河 21cm 水素線（1420.406 MHz）スペクトルの RFI（人工電波混信）自動検知とウォーターフォールからのキャリア信号検知
-* Cloud / 母艦推論 (Mac MPS / PyTorch): METEOR-M2 AVHRR 高解像度画像の雲・積雪・海氷セグメンテーションとスペクトログラム×軌道テレメトリのマルチモーダル受信品質診断
+* Edge 推論 (KubeEdge / CPU / ONNX): 銀河 21cm 水素線（1420.406 MHz）スペクトルの RFI（人工電波混信）自動検知とウォーターフォールからのキャリア信号検知を予定
+* Cloud / 母艦推論 (Mac MPS / PyTorch): METEOR-M2 AVHRR 高解像度画像の雲・積雪・海氷セグメンテーションとスペクトログラム×軌道テレメトリのマルチモーダル受信品質診断を予定
 
 ## 基礎学習・シミュレーション (`fundamentals/`)
 
@@ -66,7 +66,7 @@ ml-astronomy/
 ├── projects/                            # 機械学習・データ解析プロジェクト
 │   ├── multimodal-universe/             # MultimodalUniverse (AGN分類 / Galaxy10 / Gaia)
 │   ├── ceers-photo-z/                   # JWST CEERS 解析・PyTorch学習・推論API
-│   └── radio-ml/                        # radio-astronomy 連携 (Edge ONNX / Cloud MPS)
+│   └── radio-ml/                        # [WIP] radio-astronomy 連携 (Edge ONNX / Cloud MPS)
 ├── fundamentals/                        # 基礎理論・教育コンテンツ・物理シミュレーション
 │   ├── extreme_unraveling-the-universe/ # 『極・宇宙を解く』Jupyter演習
 │   └── playground/                      # 軌道力学・天体物理シミュレーションスクリプト

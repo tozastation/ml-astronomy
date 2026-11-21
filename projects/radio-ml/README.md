@@ -1,6 +1,8 @@
-# Radio ML (`radio-astronomy` 連携 Edge / Cloud ハイブリッド推論)
+# Radio ML (WIP / 構想中: `radio-astronomy` 連携 Edge / Cloud ハイブリッド推論)
 
-ベランダ電波観測所リポジトリ（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）で取得・アーカイブされた電波観測データ（気象衛星 LRPT 画像・スペクトログラム・銀河 21cm 水素線分光データ）に対して、機械学習モデルの学習と推論を適用するためのワークスペースです。
+ステータス: WIP（未実装・設計段階）
+
+ベランダ電波観測所リポジトリ（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）で取得・アーカイブされた電波観測データ（気象衛星 LRPT 画像・スペクトログラム・銀河 21cm 水素線分光データ）に対して、機械学習モデルの学習と推論を適用するためのワークスペースです。現時点ではモデルや推論パイプラインの実装・成果物はまだなく、以下は [Issue #7](https://github.com/tozastation/ml-astronomy/issues/7) で検討している構想です。
 
 ## 2階層の推論配置
 

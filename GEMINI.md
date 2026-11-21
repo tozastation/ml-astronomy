@@ -172,7 +172,7 @@ visualize_problem_name()
 ## プロジェクト構造
 - `projects/multimodal-universe/` - MultimodalUniverse（SDSS×HSC AGN分類、Galaxy10 DECaLS、Gaia）
 - `projects/ceers-photo-z/` - JWST CEERSデータ解析・PyTorch (MPS) 学習・Flask推論API
-- `projects/radio-ml/` - `radio-astronomy`（KubeEdge CPU / Mac MPS）連携 ML パイプライン
+- `projects/radio-ml/` - `radio-astronomy`（KubeEdge CPU / Mac MPS）連携 ML パイプライン（WIP / 構想中）
 - `fundamentals/extreme_unraveling-the-universe/` - Jupyterノートブック形式の天文学教育コンテンツと演習問題
 - `fundamentals/playground/` - 天体物理・軌道計算スクリプト
 - `infra/` - Dockerfile、docker-compose.yml、kind.yaml、Kubernetesマニフェスト、Terraformコード
