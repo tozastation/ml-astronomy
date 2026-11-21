@@ -7,9 +7,8 @@
 - MultimodalUniverse（SDSS × HSC AGN分類、Galaxy10 DECaLS、Gaia）を用いた機械学習・可視化
 - JWST（CEERS）データ解析・モデル学習および推論APIプロトタイプ
 - `radio-astronomy` 向け Edge (ONNX CPU) / Cloud (Mac MPS) 推論パイプライン
-- JupyterHubでの可視化を通した、天文学の演習問題と解説
+- Jupyter Notebookでの可視化を通した、天文学の演習問題と解説
 - 天文学可視化プレイグラウンドおよび物理シミュレーション
-- 実験用 Kubernetes / Terraform / Docker デプロイメント設定
 
 ## 開発コマンド
 - Python環境: 依存関係管理に`uv`を使用（pyproject.tomlを参照）
@@ -175,7 +174,6 @@ visualize_problem_name()
 - `projects/radio-ml/` - `radio-astronomy`（KubeEdge CPU / Mac MPS）連携 ML パイプライン（WIP / 構想中）
 - `fundamentals/extreme_unraveling-the-universe/` - Jupyterノートブック形式の天文学教育コンテンツと演習問題
 - `fundamentals/playground/` - 天体物理・軌道計算スクリプト
-- `infra/` - Dockerfile、docker-compose.yml、kind.yaml、Kubernetesマニフェスト、Terraformコード
 - `scripts/` - 開発用ユーティリティスクリプト
 
 ## 重要な指示
@@ -187,7 +185,7 @@ Geminiは必ず日本語で応答してください。すべての出力、説�
 - シンプリシティ: 機能を1つのスクリプトに統合し、ファイル数を最小限に抑える
 - ユーザビリティ: 初心者でも直感的に使える明確なコマンド体系
 - 保守性: コードの可読性を重視し、適切なコメントと関数分割を行う
-- 互換性: 異なる環境（Linux/WSL/macOS）での動作を考慮する
+- 互換性: macOS（Apple Silicon）ネイティブ環境での動作を前提とする
 
 ### ディレクトリ構造の標準
 ```
@@ -226,7 +224,7 @@ scripts/
 - エラーケース: 一般的なエラー条件での動作検証
 
 ## 注意事項
-- 機械学習モデルにPyTorchを使用
+- 機械学習モデルにPyTorch（Apple Silicon MPS 対応）を使用
 - インタラクティブ開発にJupyterノートブック
-- JupyterHubとCoderを使ったKubernetes設定
+- macOS ネイティブ環境（`mise` + `uv`）での開発を前提とする
 - 天文学の概念とデータ分析に教育的焦点

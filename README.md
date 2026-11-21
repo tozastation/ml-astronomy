@@ -70,28 +70,26 @@ ml-astronomy/
 ├── fundamentals/                        # 基礎理論・教育コンテンツ・物理シミュレーション
 │   ├── extreme_unraveling-the-universe/ # 『極・宇宙を解く』Jupyter演習
 │   └── playground/                      # 軌道力学・天体物理シミュレーションスクリプト
-├── infra/                               # 開発・実験用インフラ設定
-│   ├── Dockerfile / docker-compose.yml  # JupyterLab GPU コンテナ環境
-│   ├── kind.yaml                        # ローカル Kubernetes (Kind) 設定
-│   ├── kubernetes/                      # Helmfile / JupyterHub / Coder 設定
-│   └── terraform/                       # Coder ワークスペース用 Terraform
 └── scripts/                             # ユーティリティスクリプト (PDF変換 等)
 ```
 
-## セットアップ
+## セットアップ (macOS ネイティブ)
 
-Python 環境の依存関係管理には [`uv`](https://docs.astral.sh/uv/) を使用しています（Python 3.11 以上）。
+macOS（Apple Silicon MPS 対応）ネイティブ環境での開発を前提としています。ツールと依存関係の管理には `mise` と [`uv`](https://docs.astral.sh/uv/) を使用しています（Python 3.11 以上）。
 
 ```bash
 # リポジトリのクローン
 git clone https://github.com/tozastation/ml-astronomy.git
 cd ml-astronomy
 
+# Python / uv のセットアップ (mise を利用する場合)
+mise install
+
 # 依存ライブラリのインストール
 uv sync
 
 # JupyterLab の起動
-uv run jupyter lab
+uv run --with jupyterlab jupyter lab
 ```
 
 `MultimodalUniverse` のデータセット読み込みスクリプト (`trust_remote_code=True`) は `datasets==2.21.0` で動作確認されているため、`pyproject.toml` でバージョンを固定しています。
