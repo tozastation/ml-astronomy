@@ -1,31 +1,68 @@
-# Radio ML (WIP / 構想中: `radio-astronomy` 連携 Edge / Cloud ハイブリッド推論)
+# Radio ML (`radio-astronomy` 連携 METEOR-M2 画像補完 & Garage S3 パイプライン)
 
-ステータス: WIP（未実装・設計段階）
+ステータス: **Cloud / Mac MPS 補完パイプライン実装済み**
 
-ベランダ電波観測所リポジトリ（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）で取得・アーカイブされた電波観測データ（気象衛星 LRPT 画像・スペクトログラム・銀河 21cm 水素線分光データ）に対して、機械学習モデルの学習と推論を適用するためのワークスペースです。現時点ではモデルや推論パイプラインの実装・成果物はまだなく、以下は [Issue #7](https://github.com/tozastation/ml-astronomy/issues/7) で検討している構想です。
+ベランダ電波観測所リポジトリ（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）で受信・Garage S3 (`results/`) へアーカイブされた **METEOR-M2 気象衛星 LRPT (MSU-MR) 画像** に対して、Mac (Apple Silicon MPS) 上で欠損補完モデルを実行し、補完済み画像を Garage S3 へ転送して `satellite-viewer` 上に表示するための ML パイプラインです。
 
-## 2階層の推論配置
+## 構成ファイル
 
-`radio-astronomy` 側の環境（KubeEdge エッジノード + Garage S3 + Temporal + 母艦 Mac）に合わせて、計算負荷と即時性からモデルを配置します。
+- [`src/inpainting.py`](src/inpainting.py) — Notebook `09`/`10`/`11` で検証済みの 8ch Single-Pass (`CoastlineGuidedSharpResSEUNet`)・11ch Temporal Prev-Guided (`PrevImageGuidedResSEUNet`) モデル、自動軌道位置合わせ、ひまわり較正地表アトラス＋Leave-One-Out 過去パス逆投影、SatDump トーン較正、マスクオーバーレイ生成
+- [`src/s3_loader.py`](src/s3_loader.py) — Garage S3 (SigV4 `GET` / `HEAD` / `PUT`) クライアントおよびローカルキャッシュ同期ユーティリティ
+- [`src/model_cache.py`](src/model_cache.py) — `config_hash` 付きモデルキャッシュユーティリティ
+- [`scripts/run_inpaint_pipeline.py`](scripts/run_inpaint_pipeline.py) — Mac から手動実行する補完推論＆Garage S3 転送 CLI
+- [`tests/test_inpaint_pipeline.py`](tests/test_inpaint_pipeline.py) — SigV4 PUT/HEAD・モデルロード/推論・差分判定の単体テスト
+- `models/` — 学習済みチェックポイント（`nb09_coastline_patchgan_bundle.pt`, `nb11_temporal_prev_bundle.pt`）
 
-### 1. Edge 推論（KubeEdge / GPD Pocket3 CPU / ONNX Runtime）
+## 使い方（Mac からの手動実行）
 
-観測現場でのリアルタイム判定と S3アップロード前のノイズフィルタリングを狙いとしています。`ml-astronomy` で PyTorch 学習した軽量モデル（1D-CNN / 小型 2D-CNN）を ONNX 形式へエクスポートし、Edge Pod（Rust `ort` クレートまたは Python `onnxruntime`）上で CPU 推論を実行します。
+事前に GPD Pocket3 へ SSH 接続できる環境（または環境変数 `GARAGE_ACCESS_KEY` / `GARAGE_SECRET_KEY` 設定済み）で実行します。
 
-対象タスクの候補は次の項目です。
+### 0. 学習済みモデル（`.pt`）の取得
 
-- 銀河 21cm 水素線分光 (`03 / GALACTIC 21CM`): 1420.406 MHz ドリフトスキャンにおける都市ノイズ（RFI）混入スイープの自動検知と品質スコアリング
-- 衛星追尾ウォーターフォール: パス中の信号ロック・混信パターンのリアルタイム検知
+学習済み重みファイル（`nb09_coastline_patchgan_bundle.pt`, `nb11_temporal_prev_bundle.pt`）は Git リポジトリ本体には含めず、GitHub Release `radio-ml-models-v1` で配布しています。ローカルに無い場合は以下で取得してください（`east_asia_cal_base_atlas.npz` は初回推論時に `data/himawari_multiband_cache.npz` から自動生成・キャッシュされます）。
 
-### 2. Cloud / 母艦推論 & 学習（Mac Apple Silicon MPS / PyTorch）
+```bash
+gh release download radio-ml-models-v1 --repo tozastation/ml-astronomy -D projects/radio-ml/models
+```
 
-GPU (MPS) 帯域を活かした高解像度画像解析・マルチモーダル診断・モデル再学習を狙いとしています。Garage S3 (`04 / ARCHIVE`) に保存された観測データを取得し、Mac 上の PyTorch (MPS) でバッチ推論を実行して結果を `satellite-viewer` へ還元します。
+### 1. 補完対象パスと S3 ステータスの確認
 
-対象タスクの候補は次の項目です。
+```bash
+uv run python projects/radio-ml/scripts/run_inpaint_pipeline.py --list
+```
 
-- METEOR-M2 AVHRR 画像 (1568×792): 雲・低気圧の渦・積雪・海氷のセグメンテーション
-- マルチモーダル受信品質診断: スペクトログラム画像 × ドップラー偏移・仰角時系列からの復調成否・劣化要因分析
+### 2. ローカル検証のみ（Garage S3 へは書き込まない）
 
-## 関連 Issue
+```bash
+uv run python projects/radio-ml/scripts/run_inpaint_pipeline.py --pass-id "METEOR-M2 3_20261122_000222" --dry-run
+```
 
-- [Issue #7: `radio-astronomy` (KubeEdge CPU / Mac MPS) とのハイブリッド推論連携パイプラインの設計と実装](https://github.com/tozastation/ml-astronomy/issues/7)
+### 3. 全未補完パスの推論 ＆ Garage S3 への一括転送
+
+```bash
+uv run python projects/radio-ml/scripts/run_inpaint_pipeline.py
+```
+
+### 主なオプション
+
+- `--pass-id <ID>`: 特定のパスのみ補完（複数指定可）
+- `--latest <N>`: 最新の復号済みパス N 件のみ処理
+- `--mode {auto,temporal,single}`: 東アジア視野内昼間パスは 11ch 前イメージガイド (`temporal`)、視野外・夜間赤外専用パスは 8ch 単体 (`single`) を `auto` で自動切替
+- `--quality {standard,high}`: `high` で 4-way TTA と細粒度ストライドを有効化
+- `--force`: 既に同一 `config_hash` で補完済みでも再計算・再アップロード
+
+## Garage S3 データ契約（`ml_inpainted/`）
+
+元の復号画像（`MSU-MR-*.png` 等）を一切変更せず、各パスの S3 ディレクトリ配下に `ml_inpainted/` サブディレクトリを追加します。
+
+- `results/<satellite>/<pass_id>/ml_inpainted/avhrr_221_inpainted.png`: AI 補完済み AVHRR 221 False Color
+- `results/<satellite>/<pass_id>/ml_inpainted/msu_mr_124_inpainted.png`: AI 補完済み MSU-MR 124 False Color
+- `results/<satellite>/<pass_id>/ml_inpainted/raw_avhrr_221_aligned.png`: Before/After 比較スライダー用の補完前 Raw AVHRR 221
+- `results/<satellite>/<pass_id>/ml_inpainted/inpaint_mask_overlay.png`: 実測・部分救済(`#D4A039`)・AI補完(`#E07A38`) 境界オーバーレイ
+- `results/<satellite>/<pass_id>/ml_inpainted/metadata.json`: 使用モデル・ハッシュ・位置合わせ精度・品質 Tier（PNG 4 枚アップロード完了後に最後に書き込まれる完了マーカー）
+
+## テスト
+
+```bash
+uv run --with pytest python -m pytest projects/radio-ml/tests/test_inpaint_pipeline.py -v
+```

@@ -200,7 +200,9 @@ scripts/
 ### コーディング規約
 - 日本語対応: 出力メッセージとコメントは日本語で記述
 - エラーハンドリング: 明確なエラーメッセージと適切な終了コード
-- 進捗表示: 長時間の処理には進捗インジケーターを提供
+- 進捗表示: 30 秒以上かかる学習ループ・推論ループ・データ処理には、進捗率（`%`）・経過時間（`Elapsed`）・推定残り時間（`ETA`）を 5〜15 秒間隔を目安に `print(..., flush=True)` で出力し、Background Task Output 上で常に進捗と終了見込みを把握できるようにすること
+- ノートブック実行規約: バックグラウンドタスクで Jupyter Notebook を実行する場合は、出力がバッファリングされて無音になる `nbconvert --execute` ではなく、必ずリアルタイムストリーミング実行スクリプト [`scripts/run_notebook_live.py`](scripts/run_notebook_live.py) を使用すること（例: `PYTHONUNBUFFERED=1 uv run --with nbclient --with nbformat --with ipykernel python scripts/run_notebook_live.py <notebook.ipynb>`）
+- 学習済みモデルの条件ハッシュ付きキャッシュ規約: 学習に 30 秒以上要するモデルは [`projects/radio-ml/src/model_cache.py`](projects/radio-ml/src/model_cache.py)（`check_model_cache` / `save_model_cache`）を用いて学習条件辞書（アーキテクチャ・ハイパーパラメータ・損失重み・データ件数・乱数シード）の SHA-256 `config_hash` と学習履歴曲線を含むチェックポイントを `projects/radio-ml/models/` 配下に保存すること。条件が変わらない再実行時は学習をスキップして即時ロードし、条件変更時（または `FORCE_RETRAIN=True` 指定時）のみ自動的に再学習してキャッシュを更新すること
 - ヘルプ機能: `--help`オプションで詳細な使用方法を表示
 
 ### 依存関係管理

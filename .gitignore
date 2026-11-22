@@ -194,3 +194,8 @@ MultimodalUniverse/galaxy10_decals/dataset/best_model.pth
 
 *Zone.Identifier
 robots.txt
+
+# Radio ML local data cache
+projects/radio-ml/data/
+projects/radio-ml/outputs/
+projects/radio-ml/models/
