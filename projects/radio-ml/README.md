@@ -12,6 +12,13 @@
 - [`scripts/run_inpaint_pipeline.py`](scripts/run_inpaint_pipeline.py) — Mac から手動実行する補完推論＆Garage S3 転送 CLI
 - [`tests/test_inpaint_pipeline.py`](tests/test_inpaint_pipeline.py) — SigV4 PUT/HEAD・モデルロード/推論・差分判定の単体テスト
 - `models/` — 学習済みチェックポイント（`nb09_coastline_patchgan_bundle.pt`, `nb11_temporal_prev_bundle.pt`）
+- `notebooks/` — 実験・モデル構築ノートブック `01`〜`11`（`01`〜`08`: 多波長同期・ひまわり事前学習・Coarse-to-Fine・海岸線 Prior 実験、`09`: PatchGAN＋自動軌道位置合わせ、`10`: 全実測パス横断評価、`11`: 時系列前イメージガイド 11ch 補完）
+
+## 補完例（`METEOR-M2 3_20261026_003009`）
+
+| 補完前（Raw AVHRR 221） | 補完後（11ch `PrevImageGuidedResSEUNet`） |
+| :---: | :---: |
+| ![補完前 Raw AVHRR 221](assets/20261026_raw_avhrr_221.png) | ![補完後 AVHRR 221](assets/20261026_inpainted_avhrr_221.png) |
 
 ## 使い方（Mac からの手動実行）
 
