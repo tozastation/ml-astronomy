@@ -17,7 +17,9 @@ flowchart LR
     subgraph Observatory["radio-astronomy (GPD Pocket3: KubeEdge / k3s)"]
         SDR["RTL-SDR Blog V4"] --> DSP["DSP 復調・21cm 分光"]
         DSP -->|"復調画像・スペクトログラム"| S3["Garage S3 Archive"]
-        S3 -->|"results/ と ml_inpainted/"| Viewer["satellite-viewer<br/>(Before/After 比較表示)"]
+        S3 --> Analytics["analytics (DuckDB / dbt-duckdb)<br/>日次オントロジー診断"]
+        Analytics -->|"latest_report.json"| S3
+        S3 -->|"results/, ml_inpainted/, analytics/"| Viewer["satellite-viewer<br/>(Before/After 比較・ANALYTICS 診断)"]
         ONNX["軽量 ONNX 推論 (CPU / 構想中)<br/>21cm RFI除去 / 信号ロック検知"] -.->|"将来連携"| S3
     end
 
@@ -25,6 +27,7 @@ flowchart LR
         S3 -->|"METEOR-M2 MSU-MR バンド取得"| Infer["PyTorch MPS 欠損補完<br/>(run_inpaint_pipeline.py)"]
         Infer -->|"補完画像 + metadata.json を PUT"| S3
         Survey["公開天文サーベイ<br/>(SDSS / HSC / JWST / Gaia / ひまわり8号)"] --> Train["モデル学習・マルチモーダル実験<br/>(ResSE-UNet / PatchGAN)"]
+        Analytics -.->|"欠損分布・補完品質フィードバック"| Train
         Train -->|"重みバンドル (.pt)"| Infer
         Train -.->|"ONNX エクスポート (構想中)"| ONNX
     end
@@ -48,9 +51,10 @@ Hugging Face 等で公開されている天文大規模データセット（[Mul
 
 ベランダ電波観測所（[`tozastation/radio-astronomy`](https://github.com/tozastation/radio-astronomy)）で受信・アーカイブされた観測データ向けの機械学習パイプラインです。METEOR-M2 気象衛星画像の欠損補完パイプラインが稼働中で、Edge 推論についても構想・検討を進めています（[GitHub Issue #7](https://github.com/tozastation/ml-astronomy/issues/7)）。
 
-* **Cloud / 母艦推論（Mac Apple Silicon MPS・稼働中）**:
+* **Cloud / 母艦推論（Mac Apple Silicon MPS・稼働中）**
   * 11 本の実験ノートブック（`01`〜`11`）で構築した 2 種類の PyTorch モデル：`CoastlineGuidedSharpResSEUNet`（8ch 単体補完・視野外/夜間赤外対応）と `PrevImageGuidedResSEUNet`（11ch 前イメージ＋ひまわり8号較正地表アトラス＋Leave-One-Out 過去パス逆投影による低受信率パス補完）
   * 手動実行 CLI（`projects/radio-ml/scripts/run_inpaint_pipeline.py`）で Garage S3 上の未補完パスを差分検出し、`ml_inpainted/` 配下へ 4 種の PNG（AVHRR 221・MSU-MR 124・補完前 Raw・マスクオーバーレイ）と `metadata.json` を転送
+  * Garage S3 へ転送された `ml_inpainted/metadata.json` は、`radio-astronomy/analytics`（DuckDB + `dbt-duckdb`）の毎日 05:00 JST 診断ジョブで自動集計され、`satellite-viewer` の `05 / ANALYTICS` タブで補完品質・欠損分布シフトとして可視化され、モデル改善の根拠として活用します
   * 学習済み重み（`.pt` 2 ファイル）は GitHub Release [`radio-ml-models-v1`](https://github.com/tozastation/ml-astronomy/releases/tag/radio-ml-models-v1) で配布
 * **Edge 推論（KubeEdge CPU / ONNX・構想中）**: 銀河 21cm 水素線（1420.406 MHz）スペクトルの RFI（人工電波混信）自動検知とウォーターフォールからのキャリア信号検知を予定
 
