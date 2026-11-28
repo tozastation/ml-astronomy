@@ -171,10 +171,15 @@ visualize_problem_name()
 ## プロジェクト構造
 - `projects/multimodal-universe/` - MultimodalUniverse（SDSS×HSC AGN分類、Galaxy10 DECaLS、Gaia）
 - `projects/ceers-photo-z/` - JWST CEERSデータ解析・PyTorch (MPS) 学習・Flask推論API
-- `projects/radio-ml/` - `radio-astronomy`（KubeEdge CPU / Mac MPS）連携 ML パイプライン（WIP / 構想中）
+- `projects/radio-ml/` - `radio-astronomy` 連携 ML パイプライン（Mac MPS による METEOR-M2 画像欠損補完は稼働中、KubeEdge CPU / ONNX Edge 推論は構想中）
 - `fundamentals/extreme_unraveling-the-universe/` - Jupyterノートブック形式の天文学教育コンテンツと演習問題
 - `fundamentals/playground/` - 天体物理・軌道計算スクリプト
 - `scripts/` - 開発用ユーティリティスクリプト
+
+## 姉妹リポジトリ連携（radio-astronomy / ローカル: ../radio-astronomy）
+- 観測所システム構成: 東京都・北向きベランダ（見通し方位 $270^\circ \sim 90^\circ$、南〜南西は建物遮蔽）に 137MHz Vダイポール＋RTL-SDR Blog V4 を設置し、GPD Pocket3（Ubuntu 26.04 LTS / k3s + KubeEdge 1台集約）で運用している。建物遮蔽やフェージングにより水平黒帯（`40〜128 px`）や APID 単位の部分チャネル欠損が発生する点が、欠損補完モデル設計の物理的背景となる。
+- Garage S3 入出力仕様と `satellite-viewer` 連携: 入力は Garage S3（`satellite-recordings`）の `results/`。出力は `ml_inpainted/<pass_dir>/` へ PNG 4枚を先行 PUT したのち、最後に完了マーカーとして `metadata.json`（SHA-256 `config_hash`, `model_name`, `tier`, `seam_jump_l1`, `max_contiguous_gap_rows`, チャネル別欠損情報等）を PUT する。`satellite-viewer`（NodePort `30088`）の `01 / CONSOLE` で Before/After 比較および実測・推定マスクが表示される。
+- オントロジー・セマンティック診断（`radio-astronomy/analytics/`）との連携: `radio-astronomy` 側の DuckDB + `dbt-duckdb` 基盤が毎日 05:00 JST に全パス・`ml_inpainted/metadata.json`・21cm スキャンを自動集計し、`satellite-viewer` の `05 / ANALYTICS` タブで可視化している。新モデル（新しい `config_hash`）を実運用に投入する際は `radio-astronomy/analytics/ontology/models.yaml` に登録し、`metadata.json` の既存フィールドとの後方互換性を維持すること。
 
 ## 重要な指示
 Geminiは必ず日本語で応答してください。すべての出力、説明、コメントは日本語で行ってください。
@@ -230,3 +235,23 @@ scripts/
 - インタラクティブ開発にJupyterノートブック
 - macOS ネイティブ環境（`mise` + `uv`）での開発を前提とする
 - 天文学の概念とデータ分析に教育的焦点
+
+## 共通運用ルール（`radio-astronomy` と統一）
+
+### コミュニケーション・ドキュメント解説方針
+- 公式情報・一次情報の明記: 外部ツール、フレームワーク、論文、公開データセットを参照する際は、必ず公式サイトや GitHub リポジトリ、論文（arXiv 等）の一次情報リンクを添える。
+- 数式・公式のドキュメント記述ルール: 数式や公式をドキュメントやノートブックに記載・解説する際は、数式単体で終わらせず、必ず以下の 3 要素をセットで解説する。
+  1. 記号一覧（テーブル等）: 式を構成する各変数・定数・演算子の物理的・数学的意味と単位の明記。
+  2. 日本語での読み解き: 式が物理的・工学的に何を主張しているのかを平易な日本語で要約。
+  3. 展開ステップ・直感イメージ: 高校数学〜大学初年級の数学や基礎物理で追える途中式の展開や幾何学的・物理的直感イメージの補足。
+- 作業内容・意図の解説と確認: コマンド実行やコード変更を行う際は「今何をしているのか・なぜ必要か」を説明し、大きな方針決定や区切りではユーザーの承認・確認を挟みながら進める。
+
+### コミットルール
+- 日本語で記述する
+- 絵文字は禁止
+- Conventional Commits の形式に従う（例: `feat: ...`, `fix: ...`, `docs: ...`）
+- 「〜を追加」「〜を修正」のように簡潔な文章で記述する
+
+## PR 作成・改善報告ルール（可視化データによる根拠明示）
+- 改善・実装の PR を作成する際は、必ず**可視化されたデータ**（定量比較表、学習曲線・評価プロット、Before/After 比較画像、誤差・不確実性分布、`radio-astronomy/analytics` の実測補完・欠損分布指標等）を PR 本文の根拠として掲載すること。
+- 比較対象（ベースライン / 前モデル / 実測パス）と評価条件（サンプル数・データ範囲・`config_hash` 等）を併記し、改善幅とトレードオフを視覚的に検証可能にすること。
